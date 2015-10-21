@@ -17,8 +17,8 @@ public class Publisher {
             mqttClient = new MqttClient("tcp://localhost:1883", "mqttpublisher1");
             mqttClient.connect();
             MqttMessage message = new MqttMessage();
-            message.setPayload("A single message".getBytes());
-            mqttClient.publish("demo/test", message);
+            message.setPayload("{ \"humidity\": 61, \"temperature\": 22 }".getBytes());
+            mqttClient.publish("climate/basement", message);
             mqttClient.disconnect();
         } catch(MqttException e) {
             e.printStackTrace();
