@@ -1,7 +1,8 @@
-package be.decock.steven.climatecontrol.mqt;
+package be.decock.steven.climatecontrol.mqtt;
 
 import be.decock.steven.climatecontrol.data.ClimateDataInstant;
 import be.decock.steven.climatecontrol.data.ClimateDataInstantRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,12 @@ import org.springframework.messaging.support.GenericMessage;
 import sun.jvm.hotspot.runtime.ObjectMonitor;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
+import static java.time.LocalDateTime.now;
 
 @Configuration
 public class MqttConfiguration {
@@ -53,8 +58,9 @@ public class MqttConfiguration {
         try {
             ClimateDataInstant dataInstant = mapper.readValue(payload, ClimateDataInstant.class);
 
-            climateDataInstantRepository.save(dataInstant);
+            dataInstant.setTime(new Date());
 
+            climateDataInstantRepository.save(dataInstant);
         } catch (IOException e) {
             throw propagate(e);
         }
@@ -63,8 +69,8 @@ public class MqttConfiguration {
     public MqttPahoMessageDrivenChannelAdapter mqttMessageDrivenChannelAdapter() {
         MqttPahoMessageDrivenChannelAdapter channelAdapter =
                 new MqttPahoMessageDrivenChannelAdapter(
-                        "tcp://localhost:1883", "subscriber", mqttPahoClientFactory());
-        channelAdapter.addTopic("climate/basement", 0);
+                        "tcp://stevenyun.local:1883", "subscriber", mqttPahoClientFactory());
+        channelAdapter.addTopic("/yun/out", 0);
         return channelAdapter;
     }
 
