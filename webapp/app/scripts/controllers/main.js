@@ -8,9 +8,28 @@
  * Controller of the climatecontrolApp
  */
 angular.module('climatecontrolApp')
-  .controller('MainCtrl', function () {
-
+  .controller('MainCtrl', ['$location', function ($location) {
     $(function () {
+        var now = new Date();
+        var dayInMillis = 24*60*60*1000;
+        var twoDaysInMillis = 2 * dayInMillis;
+
+        var to = now.getTime();
+        var from = to - twoDaysInMillis;
+
+        var searchParams = $location.search();
+        if (searchParams.from) {
+          from = now.getTime() + (searchParams.from * dayInMillis);
+        }
+        if (searchParams.to) {
+          to = now.getTime() + (searchParams.to * dayInMillis);
+        }
+
+        Highcharts.setOptions({                                            // This is for all plots, change Date axis to local timezone
+            global : {
+                useUTC : false
+            }
+        });
         $('#temperatuur').highcharts({
           chart: {
             zoomType: 'x'
@@ -29,7 +48,12 @@ angular.module('climatecontrolApp')
             title: {
               text: 'Temperatuur'
             },
-            min: 0
+            min: undefined,
+            plotBands: [{
+              from: -100,
+              to: 0,
+              color: 'cyan'
+            }]
           },
           legend: {
             enabled: true
@@ -80,7 +104,7 @@ angular.module('climatecontrolApp')
             zoomType: 'x'
           },
           title: {
-            text: 'Vochtigheid'
+            text: 'Luchtvochtigheid'
           },
           subtitle: {
             text: document.ontouchstart === undefined ?
@@ -91,7 +115,7 @@ angular.module('climatecontrolApp')
           },
           yAxis: {
             title: {
-              text: 'Temperatuur'
+              text: 'Luchtvochtigheid'
             }
           },
           legend: {
@@ -138,19 +162,19 @@ angular.module('climatecontrolApp')
           }]
         });
 
-        $.getJSON('http://localhost:8080/data/basement/temperature?callback=?', function (data) {
+        $.getJSON('http://walho87d.no-ip.org:9090/data/basement/temperature?callback=?&from=' + from + '&to=' + to, function (data) {
         		var chart = $('#temperatuur').highcharts();
             chart.series[0].setData(data);
         });
-        $.getJSON('http://localhost:8080/data/outside/temperature?callback=?', function (data) {
+        $.getJSON('http://walho87d.no-ip.org:9090/data/outside/temperature?callback=?&from=' + from + '&to=' + to, function (data) {
         		var chart = $('#temperatuur').highcharts();
             chart.series[1].setData(data);
         });
-        $.getJSON('http://localhost:8080/data/basement/humidity?callback=?', function (data) {
+        $.getJSON('http://walho87d.no-ip.org:9090/data/basement/humidity?callback=?&from=' + from + '&to=' + to, function (data) {
         		var chart = $('#vochtigheid').highcharts();
             chart.series[0].setData(data);
         });
-        $.getJSON('http://localhost:8080/data/outside/humidity?callback=?', function (data) {
+        $.getJSON('http://walho87d.no-ip.org:9090/data/outside/humidity?callback=?&from=' + from + '&to=' + to, function (data) {
         		var chart = $('#vochtigheid').highcharts();
             chart.series[1].setData(data);
         });
@@ -158,4 +182,4 @@ angular.module('climatecontrolApp')
     });
 
 
-  });
+  }]);

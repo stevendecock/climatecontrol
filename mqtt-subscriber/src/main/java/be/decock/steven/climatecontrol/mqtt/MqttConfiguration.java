@@ -51,7 +51,7 @@ public class MqttConfiguration {
     private void handle(GenericMessage m) {
         String payload = (String) m.getPayload();
 
-        System.out.println(payload);
+        // System.out.println(payload);
 
         ObjectMapper mapper = new ObjectMapper();
 
