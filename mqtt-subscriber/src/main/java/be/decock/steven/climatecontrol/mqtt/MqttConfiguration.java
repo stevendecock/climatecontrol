@@ -1,38 +1,39 @@
 package be.decock.steven.climatecontrol.mqtt;
 
-import be.decock.steven.climatecontrol.data.ClimateDataInstant;
-import be.decock.steven.climatecontrol.data.ClimateDataInstantRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
+import be.decock.steven.climatecontrol.data.*;
+import be.decock.steven.climatecontrol.service.ClimateDataHourService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.messaging.support.GenericMessage;
-import sun.jvm.hotspot.runtime.ObjectMonitor;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
-import java.util.List;
 
 import static com.google.common.base.Throwables.propagate;
 import static java.time.LocalDateTime.now;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Configuration
 public class MqttConfiguration {
 
+    private static int counter = 0;
+
     @Autowired
     private ClimateDataInstantRepository climateDataInstantRepository;
+
+    @Autowired
+    private ClimateDataHourService climateDataHourService;
 
     @Bean
     public MqttPahoClientFactory mqttPahoClientFactory() {
@@ -48,17 +49,28 @@ public class MqttConfiguration {
                 .get();
     }
 
-    private void handle(GenericMessage m) {
-        String payload = (String) m.getPayload();
+    private Date toDate(LocalDateTime localDateTime) {
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
-        // System.out.println(payload);
+    private void handle(GenericMessage m) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String payload = (String) m.getPayload();
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
             ClimateDataInstant dataInstant = mapper.readValue(payload, ClimateDataInstant.class);
+            dataInstant.setTime(toDate(now));
 
-            dataInstant.setTime(new Date());
+            climateDataHourService.handleClimateDataInstant(dataInstant);
+
+            System.out.print("*");
+            if (++counter > 10) {
+                System.out.println();
+                counter = 0;
+            }
 
             climateDataInstantRepository.save(dataInstant);
         } catch (IOException e) {
