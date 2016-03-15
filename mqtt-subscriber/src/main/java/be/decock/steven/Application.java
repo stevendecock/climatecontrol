@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractJsonpResponseBodyAdvice;
 
 @SpringBootApplication
-@ComponentScan
 public class Application {
 
     public static void main(String[] args) throws Exception {

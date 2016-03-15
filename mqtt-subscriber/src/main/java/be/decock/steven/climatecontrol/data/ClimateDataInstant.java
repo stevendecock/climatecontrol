@@ -7,13 +7,13 @@ import java.util.Date;
 
 import static java.time.LocalDateTime.now;
 
-public class ClimateDataInstant {
+public class ClimateDataInstant implements IClimateDataPoint {
 
     @Id
     private String id;
     private String location;
     private float humidity;
-    private double absoluteHumidity;
+    private float absoluteHumidity;
     private float temperature;
     private Date time;
 
@@ -27,10 +27,16 @@ public class ClimateDataInstant {
         this.temperature = temperature;
     }
 
+    @Override
+    public float getRelativeHumidity() {
+        return getHumidity();
+    }
+
     public float getHumidity() {
         return humidity;
     }
 
+    @Override
     public float getTemperature() {
         return temperature;
     }
@@ -47,11 +53,12 @@ public class ClimateDataInstant {
         this.time = time;
     }
 
-    public void setAbsoluteHumidity(double absoluteHumidity) {
+    public void setAbsoluteHumidity(float absoluteHumidity) {
         this.absoluteHumidity = absoluteHumidity;
     }
 
-    public double getAbsoluteHumidity() {
+    @Override
+    public float getAbsoluteHumidity() {
         return absoluteHumidity;
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 
-public class ClimateDataHour {
+public class ClimateDataHour implements IClimateDataPoint {
 
     @Id
     private String id;
@@ -35,6 +35,23 @@ public class ClimateDataHour {
 
     public String getLocation() {
         return location;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+
+    public float getAverageAbsoluteHumidity() {
+        return averageAbsoluteHumidity;
+    }
+
+    public float getAverageRelativeHumidity() {
+        return averageRelativeHumidity;
+    }
+
+    public float getAverageTemperature() {
+        return averageTemperature;
     }
 
     public List<ClimateDataPoint> getPoints() {
@@ -65,4 +82,23 @@ public class ClimateDataHour {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
+    @Override
+    public float getRelativeHumidity() {
+        return getAverageRelativeHumidity();
+    }
+
+    @Override
+    public float getTemperature() {
+        return getAverageTemperature();
+    }
+
+    @Override
+    public Date getTime() {
+        return getStartTime();
+    }
+
+    @Override
+    public float getAbsoluteHumidity() {
+        return getAverageAbsoluteHumidity();
+    }
 }

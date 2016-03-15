@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ClimateDataInstantRepository extends MongoRepository<ClimateDataInstant, String> {
 
+    List<ClimateDataInstant> findAllByOrderByTimeAsc();
+
     List<ClimateDataInstant> findByLocation(String location);
 
     List<ClimateDataInstant> findByLocationAndTimeAfter(String location, Date from);

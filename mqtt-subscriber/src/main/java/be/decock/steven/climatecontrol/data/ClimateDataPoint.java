@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
-public class ClimateDataPoint {
+public class ClimateDataPoint implements IClimateDataPoint {
 
     private float relativeHumidity;
     private float absoluteHumidity;
@@ -26,18 +26,22 @@ public class ClimateDataPoint {
         return (float) (6.112 * Math.exp((17.67 * temperature) / (temperature + 243.5)) * relativeHumidity * 18.02 / ((273.15 + temperature) * 100 * 0.08314));
     }
 
+    @Override
     public float getRelativeHumidity() {
         return relativeHumidity;
     }
 
+    @Override
     public float getTemperature() {
         return temperature;
     }
 
+    @Override
     public Date getTime() {
         return time;
     }
 
+    @Override
     public float getAbsoluteHumidity() {
         return absoluteHumidity;
     }
