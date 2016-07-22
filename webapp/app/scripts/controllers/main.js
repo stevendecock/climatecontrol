@@ -58,6 +58,9 @@ angular.module('climatecontrolApp')
           legend: {
             enabled: true
           },
+          tooltip: {
+              xDateFormat: '%Y-%m-%d %H:%M:%S'
+          },
           plotOptions: {
             area: {
               fillColor: {
@@ -120,6 +123,9 @@ angular.module('climatecontrolApp')
           },
           legend: {
             enabled: true
+          },
+          tooltip: {
+              xDateFormat: '%Y-%m-%d %H:%M:%S'
           },
           plotOptions: {
             area: {
